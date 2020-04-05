@@ -1,0 +1,13 @@
+version: '3.7'
+volumes: 
+  taiga-media:
+services:
+  taiga:
+    image: devinsolutions/taiga:latest
+    restart: on-failure
+    command:
+      - populate-db
+    volumes:
+      - taiga-media:/srv/taiga-back/media
+      - ./static/front.json:/etc/opt/taiga-front/conf.json:ro
+      - ./static/back.py:/etc/opt/taiga-back/settings.py:ro 
