@@ -1,0 +1,4 @@
+base:
+  '*':
+    - provision
+    - secrets.common
