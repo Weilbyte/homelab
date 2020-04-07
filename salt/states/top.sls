@@ -1,4 +1,4 @@
 base:
-  'os:Debian':
+  'G@os:Debian':
     - provision.debian-vm
    

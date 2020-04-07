@@ -3,13 +3,13 @@ install-packages:
     - name: apt-get update -qq
   pkg.latest:
     - pkgs:
-      {% for package in {{ pillar['packages-debian'] }} %}
+      {% for package in pillar['packages-debian'] %}
         - {{ package }}
       {% endfor %}
 
 enable-services:
     service.running:
-      {% for service in {{ pillar['services-debian'] }} %}
+      {% for service in pillar['services-debian'] %}
       - name: {{ service }}
       {% endfor %}
       - enable: True
