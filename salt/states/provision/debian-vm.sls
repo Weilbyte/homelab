@@ -54,7 +54,7 @@ weil-account:
 
 weil-ssh-key:
   ssh_auth.present:
-    - name: 'SHA256:WpD1EFQC+9aQ/6di1TlgzFUBRiykX7KB51OxM4oc08I'
+    - name: 'AAAAC3NzaC1lZDI1NTE5AAAAIHPqe4wmGc2Ir5P9F0gFwobsr22Z24GY99AUjuSoWI4J'
     - user: weil
     - enc: ed25519
     - comment: 'Weilbyte'
