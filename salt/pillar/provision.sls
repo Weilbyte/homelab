@@ -1,3 +1,3 @@
 #Debian-centric
-packages-debian: ['openssh-server', 'zsh', 'sudo']
+packages-debian: ['openssh-server', 'zsh', 'sudo', 'curl']
 services-debian: ['sshd','salt-minion'] 
