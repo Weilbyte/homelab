@@ -52,6 +52,13 @@ weil-account:
     - require:
       - id: wheel-group
 
+weil-ssh-key:
+  ssh_auth.present:
+    - name: 'SHA256:WpD1EFQC+9aQ/6di1TlgzFUBRiykX7KB51OxM4oc08I'
+    - user: weil
+    - enc: ed25519
+    - comment: 'Weilbyte'
+
 ssh-single-attempt:
   file.replace: 
     - name: /etc/ssh/sshd_config
