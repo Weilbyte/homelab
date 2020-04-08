@@ -21,10 +21,11 @@ chmod-compose:
 docker-data-root: 
   file.managed:
     - name: /etc/systemd/system/docker.service.d/data-root.conf
-    - makeDirs: True
+    - makedirs: True
     - contents:
       - '[Service]'
-      - 'ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd:// --containerd:/run/containerd/containerd.sock'
+      - 'ExecStart='
+      - 'ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd://'
 
 apply-changes:
   cmd.run:
