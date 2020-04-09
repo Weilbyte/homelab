@@ -4,6 +4,7 @@ volumes:
   data:
   conf:
   backups:
+  logs:
 
 services:
   youtrack:
@@ -18,6 +19,7 @@ services:
       - data:/opt/youtrack/data
       - conf:/opt/youtrack/conf
       - backups:/opt/youtrack/backups
+      - logs:/opt/youtrack/logs
 
 
     
