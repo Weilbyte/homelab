@@ -1,5 +1,10 @@
 version: '3.7'
 
+volumes:
+  data:
+  conf:
+  backups:
+
 services:
   youtrack:
     image: jetbrains/youtrack:2020.1.1826
@@ -10,10 +15,9 @@ services:
     stop_signal: SIGTERM
     network_mode: bridge
     volumes:
-      - /srv/docker/youtrack/data:/opt/youtrack/data
-      - /srv/docker/youtrack/conf:/opt/youtrack/conf
-      - /srv/docker/youtrack/logs:/opt/youtrack/logs
-      - /srv/docker/youtrack/backups:opt/youtrack/backups
+      - data:/opt/youtrack/data
+      - conf:/opt/youtrack/conf
+      - backups:opt/youtrack/backups
 
 
     
