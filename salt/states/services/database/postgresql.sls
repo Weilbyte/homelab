@@ -45,7 +45,6 @@ start-postgresql:
     - name: 'systemctl start postgresql'
     - require:
       - id: postgresql-listen-address
-      - id: postgresql-password
       - id: postgresql-hba
 
 postgresql-password: 
