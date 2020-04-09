@@ -1,23 +1,19 @@
 version: '3.7'
-volumes: 
-  main:
+
 services:
   youtrack:
-    image: jetbrains/youtrack:latest
+    image: jetbrains/youtrack:2020.1.1826
     restart: always
     container_name: youtrack
     ports:
       - 8080
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/v1"]
-      interval: 30s
-      timeout: 5s
-    stop_signal: SIGHUP
+    stop_signal: SIGTERM
+    network_mode: bridge
     volumes:
-      - main/data:/opt/youtrack/data
-      - main/conf:/opt/youtrack/conf
-      - main/logs:/opt/youtrack/logs
-      - main/backups:/opt/youtrack/backups
+      - /srv/docker/youtrack/data:/opt/youtrack/data
+      - /srv/docker/youtrack/conf:/opt/youtrack/conf
+      - /srv/docker/youtrack/logs:/opt/youtrack/logs
+      - /srv/docker/youtrack/backups:opt/youtrack/backups
 
 
     
