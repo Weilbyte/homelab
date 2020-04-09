@@ -49,7 +49,7 @@ start-postgresql:
 
 postgresql-password: 
   cmd.run:
-    - name: psql -c 'ALTER USER postgres WITH PASSWORD "{{ pillar["postgres-password"] }}"'
+    - name: psql -c "ALTER USER postgres WITH PASSWORD '{{ pillar['postgres-password'] }}';"
     - runas: postgres
     - require:
       - id: start-postgresql
