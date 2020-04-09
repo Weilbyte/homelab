@@ -30,7 +30,7 @@ postgresql-data-directory:
   file.replace:
     - name: /etc/postgresql/{{pillar["psql-version"]}}/main/postgresql.conf
     - pattern: data_directory = '/var/lib/postgresql/{{pillar["psql-version"]}}/main'    
-    - repl: "data_directory = {{pillar['psql-data-directory']}}" 
+    - repl: "data_directory = '{{pillar['psql-data-directory']}}'" 
   cmd.run: 
     - name: 'mv /var/lib/postgresql/{{pillar["psql-version"]}}/main {{pillar["psql-data-directory"]}}'
 
@@ -46,7 +46,6 @@ start-postgresql:
     - require:
       - id: postgresql-listen-address
       - id: postgresql-password
-      - id: postgresql-data-directory
       - id: postgresql-hba
 
 postgresql-password: 
