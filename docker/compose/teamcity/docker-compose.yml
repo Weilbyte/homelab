@@ -1,0 +1,21 @@
+version: '3.7'
+
+volumes:
+  data:
+  logs:
+
+services:
+  youtrack:
+    image: jetbrains/teamcity-server:latest
+    restart: always
+    container_name: teamcity
+    ports:
+      - 8111
+    stop_signal: SIGTERM
+    network_mode: bridge
+    volumes:
+      - data:/data/teamcity_server/datadir
+      - logs:/opt/teamcity/logs
+
+
+    

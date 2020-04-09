@@ -1,0 +1,25 @@
+version: '3.7'
+
+volumes:
+  data:
+  conf:
+  backups:
+  logs:
+
+services:
+  youtrack:
+    image: jetbrains/upsource:2019.1.1644
+    restart: always
+    container_name: upsource
+    ports:
+      - 8080
+    stop_signal: SIGTERM
+    network_mode: bridge
+    volumes:
+      - data:/opt/upsource/data
+      - conf:/opt/upsource/conf
+      - backups:/opt/upsource/backups
+      - logs:/opt/upsource/logs
+
+
+    
