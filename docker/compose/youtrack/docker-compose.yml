@@ -17,7 +17,7 @@ services:
     volumes:
       - data:/opt/youtrack/data
       - conf:/opt/youtrack/conf
-      - backups:opt/youtrack/backups
+      - backups:/opt/youtrack/backups
 
 
     
