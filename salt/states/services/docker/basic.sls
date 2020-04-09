@@ -18,15 +18,6 @@ chmod-compose:
     - require:
       - id: install-compose
 
-docker-data-root: 
-  file.managed:
-    - name: /etc/systemd/system/docker.service.d/data-root.conf
-    - makedirs: True
-    - contents:
-      - '[Service]'
-      - 'ExecStart='
-      - 'ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd://'
-
 apply-changes:
   cmd.run:
     - name: 'systemctl daemon-reload && systemctl restart docker'
