@@ -7,4 +7,6 @@ base:
   'G@roles:docker-master':
     - services.docker.basic
     - services.docker.master
+  'G@roles:postgresql':
+    - services.database.postgresql
    
