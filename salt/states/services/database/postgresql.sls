@@ -29,7 +29,7 @@ postgresql-hba:
 postgresql-data-directory:
   file.replace:
     - name: /etc/postgresql/{{pillar["psql-version"]}}/main/postgresql.conf
-    - pattern: 'data_directory = {{yaml_dquote}}/var/lib/postgresql/{{pillar["psql-version"]}}/main{{yaml_dquote}}'          # use data in another directory"
+    - pattern: data_directory = '/var/lib/postgresql/{{pillar["psql-version"]}}/main'    
     - repl: "data_directory = {{pillar['psql-data-directory']}}" 
   cmd.run: 
     - name: 'mv /var/lib/postgresql/{{pillar["psql-version"]}}/main {{pillar["psql-data-directory"]}}'
@@ -37,13 +37,24 @@ postgresql-data-directory:
 postgresql-listen-address:
   file.replace:
     - name: /etc/postgresql/{{pillar["psql-version"]}}/main/postgresql.conf
-    - pattern: "#listen_addresses = 'localhost'         # what IP address(es) to listen on;"
+    - pattern: "#listen_addresses = 'localhost'"
     - repl: "listen_addresses = '*'"
+
+start-postgresql:
+  cmd.run:
+    - name: 'systemctl start postgresql'
+    - require:
+      - id: postgresql-listen-address
+      - id: postgresql-password
+      - id: postgresql-data-directory
+      - id: postgresql-hba
 
 postgresql-password: 
   cmd.run:
-    - name: "psql -c 'ALTER USER postgres WITH PASSWORD {{ yaml_dquote | pillar['postgres-password'] | yaml_dquote }}'"
+    - name: psql -c 'ALTER USER postgres WITH PASSWORD "{{ pillar["postgres-password"] }}"'
     - runas: postgres
+    - require:
+      - id: start-postgresql
 
 
 
