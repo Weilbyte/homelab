@@ -1,6 +1,6 @@
 version: '3.7'
 volumes: 
-  bitwarden:
+  data:
 
 services:
   bitwarden:
@@ -8,11 +8,11 @@ services:
     restart: always
     container_name: bitwarden
     ports:
-      - '80:80'
+      - 80
     healthcheck:
-      test: ['CMD', 'wget --quiet --tries=1 --spider', 'http://localhost:80']
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       timeout: 5s
     volumes:
-      - bitwarden:/data/
+      - data:/data/
 
