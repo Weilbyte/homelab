@@ -9,7 +9,7 @@ docker-drone-volume:
 
 docker-drone-container:
   cmd.run:
-    - name: 'docker run -d -p 80:80 --name=drone --restart=always -v drone:/data -e DRONE_SERVER_PROTO={{pillar["drone-rpc-proto"]}} -e DRONE_SERVER_HOST={{pillar["drone-rpc-host"]}} -e DRONE_RPC_SECRET={{pillar["drone-rpc-secret"]}} -e DRONE_GITHUB_CLIENT_ID={{pillar["drone-github-client-id"]}} -e DRONE_GITHUB_CLIENT_SECRET={{pillar["drone-github-client-secret"]}} -e DRONE_USER_CREATE=username:{{pillar["drone-admin-username"]}},admin:true drone/drone:latest'
+    - name: 'docker run -d -p 80:80 --name=drone --restart=always -v drone:/data -e DRONE_USER_FILTER={{pillar["drone-user-filter"]}} -e DRONE_SERVER_PROTO={{pillar["drone-rpc-proto"]}} -e DRONE_SERVER_HOST={{pillar["drone-rpc-host"]}} -e DRONE_RPC_SECRET={{pillar["drone-rpc-secret"]}} -e DRONE_GITHUB_CLIENT_ID={{pillar["drone-github-client-id"]}} -e DRONE_GITHUB_CLIENT_SECRET={{pillar["drone-github-client-secret"]}} -e DRONE_USER_CREATE=username:{{pillar["drone-admin-username"]}},admin:true drone/drone:latest'
     - require:
       - id: docker-drone-volume
 
