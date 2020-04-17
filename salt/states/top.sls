@@ -15,4 +15,7 @@ base:
     - services.database.postgresql
   'G@roles:plex':
     - services.plex
+  'G@roles:ptero':
+    - services.docker.basic
+    - services.ptero
    
