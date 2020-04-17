@@ -8,3 +8,5 @@ base:
   'G@roles:drone':
     - secrets.drone
     - services.drone
+  'G@roles:plex':
+    - services.plex

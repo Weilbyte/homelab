@@ -13,4 +13,6 @@ base:
     - services.drone
   'G@roles:postgresql':
     - services.database.postgresql
+  'G@roles:plex':
+    - services.plex
    
