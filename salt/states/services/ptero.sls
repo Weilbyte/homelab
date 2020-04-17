@@ -5,7 +5,7 @@ add-node-repository:
   cmd.run:
     - name: 'curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -'
 
-install-packages:
+install-required-daemon-packages:
   cmd.run:
     - name: 'apt-get install -y nodejs make gcc g++ unzip tar'
     - require:
@@ -15,7 +15,7 @@ install-node-gyp:
   cmd.run:
     - name: 'npm install -g node-gyp'
     - require:
-      - id: install-packages
+      - id: install-required-daemon-packages
 
 daemon-directories:
   cmd.run:
