@@ -40,8 +40,9 @@ daemon-service:
     - name: /etc/systemd/system/wings.service
     - contents:
       - '[Unit]'
-      - 'Description:Pterodactyl Wings Daemon'
+      - 'Description=Pterodactyl Wings Daemon'
       - 'After=docker.service'
+      - ''
       - '[Service]'
       - 'User=root'
       - 'WorkingDirectory=/srv/daemon'
@@ -50,11 +51,13 @@ daemon-service:
       - 'ExecStart=/usr/bin/node /srv/daemon/src/index.js'
       - 'Restart=on-failure'
       - 'StartLimitInterval=600'
+      - ''
       - '[Install]'
       - 'WantedBy=multi-user.target'
 
+
 daemon-enable: 
   cmd.run:
-    - name: 'systemctl start wings && systemctl enable wings' 
+    - name: 'systemctl enable docker && systemctl start wings && systemctl enable wings' 
     - require:
       - id: daemon-service
