@@ -1,16 +1,13 @@
 version: '3.7'
-volumes: 
-  db:
-  data:
 
 services:
   mariadb:
     container_name: pteropanel_db
-    env_file: ./static/.env
+    env_file: .env
     image: mariadb:latest
     restart: always
     volumes:
-    - db:/var/lib/mysql
+    - ./data/db:/var/lib/mysql
   redis:
     container_name: pteropanel_redis
     image: redis:alpine
@@ -20,11 +17,11 @@ services:
     depends_on:
     - redis
     - mariadb
-    env_file: ./static/.env
+    env_file: .env
     image: ccarney16/pterodactyl-panel:latest
     restart: always
     volumes:
-    - data:/data
+    - ./data/ptero:/data
     ports:
     - 43738:80
   
