@@ -7,7 +7,7 @@ services:
     image: linuxserver/mariadb
     restart: always
     volumes:
-    - /srv/docker/pteropanel/data/db:/config
+    - /srv/docker/pteropanel/db:/config
   redis:
     container_name: pteropanel_redis
     image: redis:alpine
@@ -21,7 +21,7 @@ services:
     image: ccarney16/pterodactyl-panel:latest
     restart: always
     volumes:
-    - /srv/docker/pteropanel/data/ptero:/data
+    - /srv/docker/pteropanel/ptero:/data
     ports:    
     - 43738:80
 
