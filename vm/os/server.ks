@@ -39,7 +39,7 @@ rootpw --lock
 
 # Packages
 %packages 
-@^Fedora Server Edition
+curl
 coreutils
 sed
 salt-minion
