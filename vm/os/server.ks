@@ -35,7 +35,7 @@ selinux --disabled
 network --bootproto=dhcp --ipv6=dhcp 
 
 # Users
-rootpw --lock 
+rootpw testtest
 
 # Packages
 %packages 
