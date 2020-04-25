@@ -32,10 +32,10 @@ firewall --disable
 selinux --disabled
 
 # Network settings 
-network --bootproto=dhcp --ipv6=dhcp 
+network --bootproto=dhcp --ipv6=auto
 
 # Users
-rootpw testtest
+rootpw --lock
 
 # Packages
 %packages 
