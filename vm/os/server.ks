@@ -35,23 +35,23 @@ selinux --disabled
 network --bootproto=dhcp --ipv6=auto
 
 # Users
-rootpw testtest
+rootpw --lock
+user --name=weil --groups=wheel --password=testtest
 
 # Packages
 %packages 
 curl
 coreutils
 sed
-salt-minion
 %end
 
 # Services
-services --disabled=cockpit --enabled=salt-minion
+services --disabled=cockpit
 
 text
 
 %post
-/usr/bin/sed -i 's/#master: salt/master: salt.srv.dhcp.weilbyte.net/g' /etc/salt/minion
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 %end
 
 reboot 
