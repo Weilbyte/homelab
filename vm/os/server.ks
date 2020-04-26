@@ -37,6 +37,7 @@ network --bootproto=dhcp --ipv6=auto
 # Users
 rootpw --lock
 user --name=weil --groups=wheel --password=testtest
+sshkey --username=weil "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILsfv6VBTn7dGQMyviq1YvB1n6/V9KZErtr4oZdBcNse WeilNET Ansible"
 
 # Packages
 %packages 
