@@ -1,0 +1,4 @@
+- name: Disable usage of su for non-wheel users
+  lineinfile:
+      path: /etc/pam.d/su
+      line: auth       required   pam_wheel.so

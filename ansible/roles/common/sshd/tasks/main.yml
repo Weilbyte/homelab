@@ -1,0 +1,30 @@
+- name: Allow a singular SSH Authentication attempt
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '#MaxAuthTries 6'
+    replace: 'MaxAuthTries 1'
+  become: true
+
+- name: Disable password authentication
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '#PasswordAuthentication yes'
+    replace: 'PasswordAuthentication no'
+  become: true
+
+- name: Disable root login
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '#PermitRootLogin prohibit-password'
+    replace: 'PermitRootLogin no'
+  become: true
+
+- name: Restart SSH service
+  service: 
+    name: sshd
+    state: restarted
+  become: true
+
+
+
+  
