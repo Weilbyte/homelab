@@ -1,0 +1,13 @@
+- name: Ensure weil user exists
+  user:
+    name: weil
+    append: yes
+    comment: Weilbyte
+    groups: [wheel]
+
+- name: Set authorized key
+  authorized_key:
+    user: weil
+    state: present
+    key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHPqe4wmGc2Ir5P9F0gFwobsr22Z24GY99AUjuSoWI4J Weilbyte
+
