@@ -1,0 +1,19 @@
+version: '3.7'
+volumes: 
+  ts:
+
+services:
+  panel:
+    container_name: teamspeak
+    environment:
+      TS3SERVER_LICENSE: accept
+    image: teamspeak
+    restart: always
+    volumes:
+    - ts:/var/ts3server/
+    ports:    
+    - 19510:9987
+    - 19511:10011
+    - 19512:30033
+
+  
