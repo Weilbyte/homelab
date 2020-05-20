@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  bitwarden:
+    image: weilbyte/autopost:latest
+    restart: always
+    container_name: autopost
+    env_file: .env
+    volumes:
+      - ./rules.yml:/srv/rules.yml
+
