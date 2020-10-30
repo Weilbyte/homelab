@@ -1,0 +1,79 @@
+{
+  "variables": {
+      "pm_host": "",
+      "pm_user": "root@pam",
+      "pm_pass": "",
+      "pm_node": "",
+      "vm_id": "9000",
+      "vm_name": "ubuntu-20.04.1",
+      "pm_bridge": "vmbr4",
+      "disk_size": "7G",
+      "disk_pool": "ssd-lvm",
+      "addr": "0.0.0.0"
+  },
+  "sensitive-variables": ["pm_pass"],
+  "builders": [
+    {
+      "type": "proxmox",
+      "proxmox_url": "https://{{user `pm_host`}}:8006/api2/json",
+      "insecure_skip_tls_verify": true,
+      "username": "{{user `pm_user`}}",
+      "password": "{{user `pm_pass`}}",
+      "node": "{{user `pm_node`}}",
+
+      "iso_file": "local:iso/ubuntu-20.04.1-live-server-amd64.iso",
+      "iso_checksum": "sha256:443511f6bf12402c12503733059269a2e10dec602916c0a75263e5d990f6bb93",
+      "iso_storage_pool": "local",
+      "unmount_iso": true,
+
+      "template_description": "Ubuntu 20.04.1 template",
+      "vm_id": "{{user `vm_id`}}",
+      "vm_name": "{{user `vm_name`}}",
+      "os": "l26", 
+
+      "memory": 2048,
+      "cores": 2,
+
+      "network_adapters": [
+        {
+          "model": "virtio",
+          "bridge": "{{user `pm_bridge`}}"
+        }
+      ],
+
+      "scsi_controller": "virtio-scsi-pci",
+      "disks": [
+        {
+          "disk_size": "{{user `disk_size`}}",
+          "storage_pool": "{{user `disk_pool`}}",
+          "storage_pool_type": "lvm"
+        }
+      ],
+
+      "qemu_agent": true,
+      "cloud_init": true,
+
+      "boot_wait": "5s",
+      "boot_command": [
+        "<enter><enter><f6><esc><wait> ",
+        "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+        "<enter>"
+      ],
+      "ssh_username": "ubuntu",
+      "ssh_password": "ubuntu",
+      "ssh_handshake_attempts": "20",
+      "ssh_timeout": "20m",
+      
+      "http_directory": "ci",
+      "http_bind_address": "{{ user `addr`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible-local",
+      "playbook_file": "./init.yml",
+      "extra_arguments": [ "--extra-vars", "\"ansible_become_pass=ubuntu\"" ]
+    }
+  ]
+}
+

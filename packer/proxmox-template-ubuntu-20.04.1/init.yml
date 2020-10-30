@@ -1,0 +1,72 @@
+- name: Basic playbook to ready Ubuntu 20.04.1 for provisioning
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Update all packages
+      package:
+        name: '*'
+        state: latest
+      become: true
+
+    - name: Remove snap
+      apt:
+        name: snapd
+        purge: true
+        state: absent
+      become: true
+
+    - name: Lower SSH Authentication attempts
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: '#MaxAuthTries 6'
+        replace: 'MaxAuthTries 1'
+      become: true
+
+    - name: Disable password authentication
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: '#PasswordAuthentication yes'
+        replace: 'PasswordAuthentication no'
+      become: true
+
+    - name: Disable password root login
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: '#PermitRootLogin prohibit-password'
+        replace: 'PermitRootLogin without-password'
+      become: true
+
+    - name: Add Ansible key to root
+      authorized_key:
+        user: root
+        state: present
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMiAQf0GuePZ9k7SMlUukweW76jHURCf26mY7xpuhnBd Ansible"
+      become: true
+
+    - name: Remove autoinstall and hostname files
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - /etc/cloud/cloud.cfg.d/99-installer.cfg
+        - /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+        - /etc/netplan/00-installer-config.yaml
+        - /etc/hostname
+        - /etc/hosts
+      become: true
+
+    - name: Run cloud-init clean
+      shell: cloud-init clean -l -s
+      become: true
+
+    - name: Restart SSH service
+      service: 
+        name: sshd
+        state: restarted
+      become: true
+
+    - name: Disable ubuntu account
+      user: 
+        name: ubuntu
+        password: '!'
+      become: true
