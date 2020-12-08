@@ -1,1 +1,8 @@
+
+# Git-secret
 **/secrets/*.sls
+.gitsecret/keys/random_seed
+
+# Secrets: Terraform
+terraform.tfvars
+terraform.tfstate
