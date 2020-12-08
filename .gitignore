@@ -1,3 +1,5 @@
+# Packer
+packer_cache
 
 # Git-secret
 **/secrets/*.sls
