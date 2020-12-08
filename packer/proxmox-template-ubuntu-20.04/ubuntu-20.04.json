@@ -5,7 +5,7 @@
       "pm_pass": "",
       "pm_node": "",
       "vm_id": "9000",
-      "vm_name": "ubuntu-20.04.1",
+      "vm_name": "ubuntu-20.04",
       "pm_bridge": "vmbr4",
       "disk_size": "7G",
       "disk_pool": "ssd-lvm",
