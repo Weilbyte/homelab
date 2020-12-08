@@ -1,6 +1,10 @@
 # Packer
 packer_cache
 
+# Terraform
+.terraform
+.terraform.lock.hcl
+
 # Git-secret
 **/secrets/*.sls
 .gitsecret/keys/random_seed
@@ -8,3 +12,4 @@ packer_cache
 # Secrets: Terraform
 terraform.tfvars
 terraform.tfstate
+terraform.tfstate.backup
