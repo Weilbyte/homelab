@@ -18,8 +18,10 @@
                 ExecStart=
                 ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd://
         dest: /etc/systemd/system/docker.service.d/data-root.conf
-    - name: Restart docker
-      command: systemctl daemon-reload && systemctl restart docker
+    - name: Reload daemon
+      command: systemctl daemon-reload
+    - name: Restart Docker
+      command: systemctl restart docker
 
 - name: Install Portainer master
   hosts: portainer_master
