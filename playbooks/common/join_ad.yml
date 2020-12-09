@@ -24,7 +24,8 @@
           - libpam-sss
           - adcli
           - samba-common-bin
-          - oddjob oddjob-mkhomedir
+          - oddjob
+          - oddjob-mkhomedir
           - packagekit
     - name: Join AD domain
       expect:
