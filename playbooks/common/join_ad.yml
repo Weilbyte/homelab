@@ -6,8 +6,8 @@
     - name: Verify that mandatory variables are defined
       assert:
         that: __var is defined
-        fail_msg: Required variable {{ __var }} is missing!
-        success_msg: Required variable {{ __var }} is present
+        fail_msg: "Required variable {{ __var }} is missing!"
+        success_msg: "Required variable {{ __var }} is present"
       loop_control:
         loop_var: __var
       with_items:
@@ -28,9 +28,9 @@
           - packagekit
     - name: Join AD domain
       expect:
-        command: realm join -U {{ join_user }} dhcp.weilbyte.net
+        command: "realm join -U {{ join_user }} dhcp.weilbyte.net"
         responses:
-          (?i)password: {{ join_pass }}
+          (?i)password: "{{ join_pass }}"
       no_log: true
     - name: Enable home directory creation for domain users
       lineinfile:
