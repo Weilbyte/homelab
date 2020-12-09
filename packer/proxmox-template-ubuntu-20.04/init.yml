@@ -15,6 +15,10 @@
         state: absent
       become: true
 
+    - name: Update timezone info
+      command: timedatectl set-timezone Europe/Skopje
+      become: true
+
     - name: Lower SSH Authentication attempts
       replace:
         path: /etc/ssh/sshd_config
@@ -110,6 +114,9 @@
         dest: /var/lib/cloud/scripts/per-instance/reboot
         content: |
           #!/bin/bash
+          touch /opt/ran_reboot
+          rm -rf /var/lib/dbus/machine-id && rm -rf /etc/machine-id
+          dbus-uuidgen --ensure=/etc/machine-id && dbus-uuidgen --ensure
           shutdown -r now
         mode: a+x
       become: true
