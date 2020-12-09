@@ -17,11 +17,12 @@
                 [Service]
                 ExecStart=
                 ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd://
-        dest: content.txt
-
+        dest: /etc/systemd/system/docker.service.d/data-root.conf
+    - name: Restart docker
+      command: systemctl daemon-reload && systemctl restart docker
 
 - name: Install Portainer master
-  hosts: portainer-master
+  hosts: portainer_master
   tasks: 
     - name: Create Portainer volume
       command: docker volume create portainer_data
@@ -29,7 +30,7 @@
       command: docker run -d -p 8000:8000 -p 9000:9000 --name=Portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
 
 - name: Install Portainer agent
-  hosts: portainer-agent
+  hosts: portainer_agent
   tasks:
     - name: Run Portainer agent container
       command: docker run -d -p 9001:9001 --name=Agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/volumes:/var/lib/docker/volumes portainer/agent
