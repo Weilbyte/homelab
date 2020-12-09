@@ -12,7 +12,7 @@ resource "proxmox_vm_qemu" "ansible" {
   bootdisk = "scsi0"
   agent = 1
 
-  memory = 2048
+  memory = 3072
   cores = 2
 
   disk {
