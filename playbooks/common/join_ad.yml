@@ -1,0 +1,77 @@
+---
+
+- name: Install Docker and Docker Compose
+  hosts: all
+  tasks:
+    - name: Verify that mandatory variables are defined
+      assert:
+        that: __var is defined
+        fail_msg: Required variable {{ __var }} is missing!
+        success_msg: Required variable {{ __var }} is present
+      loop_control:
+        loop_var: __var
+      with_items:
+        - join_user
+        - join_pass
+    - name: Install required packages
+      apt:
+        update_cache: true
+        pkg:
+          - realmd
+          - sssd
+          - sssd-tools
+          - libnss-sss
+          - libpam-sss
+          - adcli
+          - samba-common-bin
+          - oddjob oddjob-mkhomedir
+          - packagekit
+    - name: Join AD domain
+      expect:
+        command: realm join -U {{ join_user }} dhcp.weilbyte.net
+        responses:
+          (?i)password: {{ join_pass }}
+      no_log: true
+    - name: Enable home directory creation for domain users
+      lineinfile:
+        path: /etc/pam.d/common-session
+        line: session optional        pam_mkhomedir.so skel=/etc/skel umask=077
+    - name: Set SSH authorized key check command
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: |
+            AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys %u
+            AuthorizedKeysCommandUser nobody
+    - name: Configure SSSD
+      copy: 
+        dest: /etc/sssd/sssd.conf
+        content: |
+          [sssd]
+          domains = dhcp.weilbyte.net
+          config_file_version = 2
+          services = nss, pam, ssh
+
+          [domain/dhcp.weilbyte.net]
+          default_shell = /bin/bash
+          krb5_store_password_if_offline = True
+          cache_credentials = True
+          krb5_realm = DHCP.WEILBYTE.NET
+          realmd_tags = manages-system joined-with-adcli
+          id_provider = ad
+          override_homedir = /home/%u
+          fallback_homedir = /home/%u@%d
+          ad_domain = dhcp.weilbyte.net
+          use_fully_qualified_names = False
+          ldap_id_mapping = True
+          access_provider = simple
+          ad_enable_gc = False
+          ldap_user_ssh_public_key = altSecurityIdentities
+          entry_cache_timeout = 10
+          simple_allow_users = weil
+    - name: Restart SSSD and SSH services
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items:
+        - ssh
+        - sssd
