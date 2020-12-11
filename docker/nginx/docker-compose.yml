@@ -1,0 +1,18 @@
+version: '3.7'
+volumes: 
+  data:
+  letsencrypt:
+
+services:
+  nginx_pm:
+    image: jc21/nginx-proxy-manager:latest
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+      - 81:81
+    environment:
+      DB_SQLITE_FILE: /data/database.sqlite
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
