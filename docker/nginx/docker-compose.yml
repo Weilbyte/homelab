@@ -4,7 +4,8 @@ volumes:
   letsencrypt:
 
 services:
-  nginx_pm:
+  nginx:
+    container_name: nginx
     image: jc21/nginx-proxy-manager:latest
     restart: always
     ports:
