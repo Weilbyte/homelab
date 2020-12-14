@@ -5,7 +5,7 @@
   roles:
     - role: geerlingguy.docker
       docker_compose_version: "1.27.4"
-  post_tasks: 
+  post_tasks:
     - name: Make sure service override directory exists
       file:
         path: /etc/systemd/system/docker.service.d/
@@ -18,21 +18,25 @@
                 ExecStart=
                 ExecStart=/usr/bin/dockerd --data-root /srv/docker/ -H fd://
         dest: /etc/systemd/system/docker.service.d/data-root.conf
-    - name: Reload daemon
-      command: systemctl daemon-reload
-    - name: Restart Docker
-      command: systemctl restart docker
+      notify:
+        - Restart docker
+  handlers:
+    - name: Restart docker
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: docker
 
 - name: Install Portainer master
   hosts: portainer_master
-  tasks: 
+  tasks:
     - name: Create Portainer volume
-      command: docker volume create portainer_data
+      shell: docker volume create portainer_data
     - name: Create Portainer container
-      command: docker run -d -p 8000:8000 -p 9000:9000 --name=Portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+      shell: docker run -d -p 8000:8000 -p 9000:9000 --name=Portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
 
 - name: Install Portainer agent
   hosts: portainer_agent
   tasks:
     - name: Run Portainer agent container
-      command: docker run -d -p 9001:9001 --name=Agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/volumes:/var/lib/docker/volumes portainer/agent
+      shell: docker run -d -p 9001:9001 --name=Agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/volumes:/var/lib/docker/volumes portainer/agent
