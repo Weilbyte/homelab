@@ -36,6 +36,7 @@
       shell: docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
       register: createmaster
       failed_when: createmaster.rc == 125 and "is already in use by container" not in createmaster.stdout
+      ignore_errors: true
 
 - name: Install Portainer agent
   hosts: portainer_agent
@@ -44,3 +45,4 @@
       shell: docker run -d -p 9001:9001 --name=agent --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/volumes:/var/lib/docker/volumes portainer/agent
       register: createagent
       failed_when: createagent.rc == 125 and "is already in use by container" not in createagent.stdout
+      ignore_errors: true
