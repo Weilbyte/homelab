@@ -1,0 +1,40 @@
+---
+
+- name: Install Docker and Docker Compose
+  hosts: pterodactyl_agent
+  tasks:
+    - name: Ensure pterodactyl directory exists
+      file:
+        path: /etc/pterodactyl
+        state: directory
+        recurse: true
+    - name: Download wings
+      get_url:
+        url: https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
+        dest: /usr/local/bin/wings
+        mode: a+x
+    - name: Create service file
+      copy:
+        content: |
+          [Unit]
+          Description=Pterodactyl Wings Daemon
+          After=docker.service
+
+          [Service]
+          User=root
+          WorkingDirectory=/etc/pterodactyl
+          LimitNOFILE=4096
+          PIDFile=/var/run/wings/daemon.pid
+          ExecStart=/usr/local/bin/wings
+          Restart=on-failure
+          StartLimitInterval=600
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/wings.service
+    - name: Enable and start service
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: wings
+
