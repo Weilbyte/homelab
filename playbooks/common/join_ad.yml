@@ -33,18 +33,24 @@
         responses:
           (?i)password: "{{ join_pass }}"
       no_log: true
+      ignore_errors: true
+      register: joincmd
     - name: Enable home directory creation for domain users
       lineinfile:
         path: /etc/pam.d/common-session
         line: session optional        pam_mkhomedir.so skel=/etc/skel umask=077
+      when: joincmd.rc == 0
     - name: Set SSH authorized key check command
       lineinfile:
         path: /etc/ssh/sshd_config
         line: |
             AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys %u
             AuthorizedKeysCommandUser nobody
+      when: joincmd.rc == 0
+      notify:
+        - Restart services
     - name: Configure SSSD
-      copy: 
+      copy:
         dest: /etc/sssd/sssd.conf
         content: |
           [sssd]
@@ -69,7 +75,10 @@
           ldap_user_ssh_public_key = altSecurityIdentities
           entry_cache_timeout = 10
           simple_allow_users = weil
-    - name: Restart SSSD and SSH services
+      notify:
+        - Restart services
+  handlers:
+    - name: Restart services
       service:
         name: "{{ item }}"
         state: restarted
