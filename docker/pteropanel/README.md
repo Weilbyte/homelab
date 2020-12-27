@@ -7,3 +7,5 @@ Modified version of [pterodactyl-docker](https://github.com/ccarney16/pterodacty
 MariaDB data **=>** `db`      
 Pterodactyl configuration **=>** `ptero`
 
+### Adding user
+Run `docker-compose run --rm panel php artisan p:user:make`
