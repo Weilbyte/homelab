@@ -1,6 +1,6 @@
 resource "proxmox_vm_qemu" "docker" {
   depends_on = [proxmox_vm_qemu.docker-master]
-  count = 1
+  count = 2
   name = "docker${count.index}"
   desc = "Portainer agent VM."
   target_node = var.pm.node
