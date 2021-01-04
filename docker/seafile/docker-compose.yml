@@ -1,9 +1,4 @@
 version: '3.7'
-volumes:
-  data:
-    driver: local-persist
-    driver_opts:
-      mountpoint: /mnt/seafile
 
 services:
   seafile:
@@ -11,14 +6,12 @@ services:
     container_name: seafile
     restart: always
     volumes:
-      - data:/seafile
+      - /mnt/seafile:/seafile
     ports:
       - 41729:8000
       - 41730:8082
     environment:
       - SEAFILE_NAME=Seafile
       - SEAFILE_ADDRESS=file.weilbyte.net
-      - SEAFILE_ADMIN=seafile
+      - SEAFILE_ADMIN=seafile@example.com
       - SEAFILE_ADMIN_PW=seafile
-
-  
