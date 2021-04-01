@@ -40,4 +40,5 @@
     - name: Install Kubernetes
       apt:
         name: ['kubelet', 'kubeadm', 'kubectl']
+        update_cache: true
         state: present # holds automatically
