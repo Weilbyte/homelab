@@ -1,6 +1,6 @@
 ---
 
-- name: Install Docker and Docker Compose
+- name: Install Pterodactl agent
   hosts: pterodactyl_agent
   tasks:
     - name: Ensure pterodactyl directory exists
