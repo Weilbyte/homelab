@@ -41,7 +41,7 @@
       apt:
         name: "{{ item }}"
         state: present # holds automatically
-        with_items:
-          - kubelet
-          - kubeadm
-          - kubectl
+      with_items:
+        - kubelet
+        - kubeadm
+        - kubectl
