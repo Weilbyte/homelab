@@ -1,0 +1,47 @@
+---
+
+- name: Install containerd
+  hosts: kube_master:kube_worker
+  roles:
+    - role: geerlingguy.containerd
+  post_tasks:
+    - name: Set net.bridge.bridge-nf-call-iptables to 1
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: net.bridge.bridge-nf-call-iptables = 1
+    - name: Enable IP forwarding
+      shell: echo '1' > /proc/sys/net/ipv4/ip_forward
+    - name: Reload sysctl configuration
+      shell: sysctl --system
+    - name: Load overlay and br_netfilter modules
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter
+
+- name: Install Kubernetes
+  hosts: kube_master:kube_worker
+  roles:
+    - role: geerlingguy.containerd
+  tasks:
+    - name: Disable swap
+      shell: |
+        swapoff -a 
+        sed -i '/swap/d' /etc/fstab
+    - name: Install prerequisites
+      apt:
+        pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+    - name: Download GCP public signing key
+      shell: curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    - name: Add Kubernetes repository
+      shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    - name: Install Kubernetes
+      apt:
+        name: "{{ item }}"
+        state: present # holds automatically
+        with_items:
+          - kubelet
+          - kubeadm
+          - kubectl

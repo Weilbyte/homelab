@@ -4,3 +4,6 @@ roles:
   - name: geerlingguy.docker
     src: https://github.com/geerlingguy/ansible-role-docker.git
     version: e5adc9a5289c02cc1c7044460deb1ab59a5971f9
+  - name: geerlingguy.containerd
+    src: https://github.com/geerlingguy/ansible-role-containerd.git
+    version: df9dc4b7c31db1635187eb0e484d56c1fe06fa7b
