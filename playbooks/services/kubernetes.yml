@@ -83,12 +83,12 @@
         - name: Install Calico pod network
           shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
       when: 
-        - inventory_hostname in groups['kube_master']
+        - inventory_hostname in groups['kube_master']|default([])
         - not apiserver_manifest.stat.exists
     - name: Create join token
       shell: kubeadm token create --description "Temporary join token" --ttl 10m --print-join-command
       register: token_create
-      when: inventory_hostname in groups['kube_master']
+      when: inventory_hostname in groups['kube_master']|default([])
     - name: Join cluster
       shell: "{{  token_create.stdout.strip() }}"
-      when: inventory_hostname in groups['kube_worker']
+      when: inventory_hostname in groups['kube_worker']|default([])
