@@ -60,6 +60,11 @@
 - name: Run Kubernetes cluster commands
   hosts: kube_master:kube_worker
   pre_tasks:
+    - name: Verify that mandatory variables are defined
+      assert:
+        that: endpoint is defined
+        fail_msg: "Required variable endpoint is missing!"
+        success_msg: "Required variable endpoint is present"
     - name: Check if cluster already intiated
       stat:
         path:  /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -68,7 +73,7 @@
     - name: Cluster creation
       block:
         - name: Initialize cluster
-          shell: kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-master.dhcp.weilbyte.net # TODO: turn these into variables
+          shell: "kubeadm init --pod-network-cidr={{ cidr|default('192.168.0.0/16') }} --control-plane-endpoint={{ endpoint }}" # TODO: turn these into variables
           register: init_cmd
         - debug: msg="{{ initcmd.stdout_lines }}"
         - name: Check initialization status
@@ -82,7 +87,7 @@
             sudo chown $(id -u):$(id -g) $HOME/.kube/config
         - name: Install Calico pod network
           shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-      when: 
+      when:
         - inventory_hostname in groups['kube_master']|default([])
         - not apiserver_manifest.stat.exists
     - name: Create join token
