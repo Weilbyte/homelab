@@ -98,5 +98,5 @@
       shell: "{{  token_create.stdout.strip() }}"
       when: inventory_hostname in groups['kube_worker']|default([])
     - name: Delete join token
-      shell: "kubeadm token delete {{ token.create().stdout.strip().split('--token ')[1].split(' ')[0] }}"
+      shell: "kubeadm token delete {{ token_create.stdout.strip().split('--token ')[1].split(' ')[0] }}"
       when: inventory_hostname in groups['kube_master']|default([])
