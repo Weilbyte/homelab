@@ -42,3 +42,18 @@
         name: ['kubelet', 'kubeadm', 'kubectl']
         update_cache: true
         state: present # holds automatically
+
+  - name: Create cluster
+    hosts: kube_master:kube_worker
+    tasks:
+      - name: Initialize cluster
+        shell: kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-master.dhcp.weilbyte.net # TODO: turn these into variables
+        register: initcmd
+        when: inventory_hostname in groups['kube_master']
+      - name: Check join command existence
+        fail:
+          msg:
+            - Join command is not present in last line of output. Cluster initialization failed?
+            - Last line is {{ initcmd.stdout_lines[-1].strip() }}
+        when: not (initcmd.stdout_lines[-1].strip().startswith('kubeadm join'))
+      - debug: msg="{{ initcmd.stdout_lines[-1].strip() }}"
