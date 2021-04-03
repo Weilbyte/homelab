@@ -2,58 +2,93 @@
 
 - name: Install containerd
   hosts: kube_master:kube_worker
+  pre_tasks:
+    - name: Check if containerd is already installed
+      stat:
+        path: /lib/systemd/system/containerd.service
+      register: containerd_service
   roles:
     - role: geerlingguy.containerd
+      when: not containerd_service.stat.exists
   post_tasks:
-    - name: Set net.bridge.bridge-nf-call-iptables to 1
-      lineinfile:
-        path: /etc/sysctl.conf
-        line: net.bridge.bridge-nf-call-iptables = 1
-    - name: Enable IP forwarding
-      shell: echo '1' > /proc/sys/net/ipv4/ip_forward
-    - name: Reload sysctl configuration
-      shell: sysctl --system
-    - name: Load overlay and br_netfilter modules
-      shell: |
-        modprobe overlay
-        modprobe br_netfilter
+    - name: Configure system for containerd
+      block:
+        - name: Set net.bridge.bridge-nf-call-iptables to 1
+          lineinfile:
+            path: /etc/sysctl.conf
+            line: net.bridge.bridge-nf-call-iptables = 1
+        - name: Enable IP forwarding
+          shell: echo '1' > /proc/sys/net/ipv4/ip_forward
+        - name: Reload sysctl configuration
+          shell: sysctl --system
+        - name: Load overlay and br_netfilter modules
+          shell: |
+            modprobe overlay
+            modprobe br_netfilter
+      when: not containerd_service.stat.exists
 
 - name: Install Kubernetes
   hosts: kube_master:kube_worker
-  roles:
-    - role: geerlingguy.containerd
   tasks:
-    - name: Disable swap
-      shell: |
-        swapoff -a 
-        sed -i '/swap/d' /etc/fstab
-    - name: Install prerequisites
-      apt:
-        pkg:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-    - name: Download GCP public signing key
-      shell: curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    - name: Add Kubernetes repository
-      shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    - name: Check for Kubernetes
+      shell: command -v kubectl >/dev/null 2>&1
+      register: kubectl_binary
+      ignore_errors: yes
     - name: Install Kubernetes
-      apt:
-        name: ['kubelet', 'kubeadm', 'kubectl']
-        update_cache: true
-        state: present # holds automatically
+      block:
+        - name: Disable swap
+          shell: |
+            swapoff -a 
+            sed -i '/swap/d' /etc/fstab
+        - name: Install prerequisites
+          apt:
+            pkg:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+        - name: Download GCP public signing key
+          shell: curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        - name: Add Kubernetes repository
+          shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        - name: Install Kubernetes
+          apt:
+            name: ['kubelet', 'kubeadm', 'kubectl']
+            update_cache: true
+            state: present # holds automatically
+      when: kubectl_binary.rc == 1
 
-- name: Create cluster
+- name: Run Kubernetes cluster commands
   hosts: kube_master:kube_worker
+  pre_tasks:
+    - name: Check if cluster already intiated
+      stat:
+        path:  /etc/kubernetes/manifests/kube-apiserver.yaml
+      register: apiserver_manifest
   tasks:
-    - name: Initialize cluster
-      shell: kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-master.dhcp.weilbyte.net # TODO: turn these into variables
-      register: initcmd
+    - name: Cluster creation
+      block:
+        - name: Initialize cluster
+          shell: kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-master.dhcp.weilbyte.net # TODO: turn these into variables
+          register: init_cmd
+        - debug: msg="{{ initcmd.stdout_lines }}"
+        - name: Check initialization status
+          fail:
+            msg: Non-zero return code for kubeadm init. Cluster initialization failed?
+          when: not (init_cmd.rc == 0)
+        - name: Copy configs
+          shell: |
+            mkdir -p $HOME/.kube
+            sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            sudo chown $(id -u):$(id -g) $HOME/.kube/config
+        - name: Install Calico pod network
+          shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+      when: 
+        - inventory_hostname in groups['kube_master']
+        - not apiserver_manifest.stat.exists
+    - name: Create join token
+      shell: kubeadm token create --description "Temporary join token" --ttl 10m --print-join-command
+      register: token_create
       when: inventory_hostname in groups['kube_master']
-    - name: Check join command existence
-      fail:
-        msg:
-          - Join command is not present in last line of output. Cluster initialization failed?
-          - Last line is {{ initcmd.stdout_lines[-1].strip() }}
-      when: not (initcmd.stdout_lines[-1].strip().startswith('kubeadm join'))
-    - debug: msg="{{ initcmd.stdout_lines[-1].strip() }}"
+    - name: Join cluster
+      shell: "{{  token_create.stdout.strip() }}"
+      when: inventory_hostname in groups['kube_worker']
