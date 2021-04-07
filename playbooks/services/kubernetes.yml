@@ -90,11 +90,12 @@
         - "'kube_master' in {{ group_names }}"
         - not apiserver_manifest.stat.exists
     - debug:
-        msg: "{{ group_names }} - {{ inventory_hostname  }}"
+        msg: "match kube_master"
+      when: "'kube_master' in group_names"
     - name: Create join token
       shell: "kubeadm token create --description 'Temporary join token (Ansible)' --ttl 1h --print-join-command"
-      register: token_create
       when: "'kube_master' in group_names"
+      register: token_create
     - name: Join cluster
       shell: "{{  token_create.stdout.strip() }}"
       when: "'kube_worker' in group_names"
