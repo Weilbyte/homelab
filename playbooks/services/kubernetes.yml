@@ -75,7 +75,6 @@
         - name: Initialize cluster
           shell: "kubeadm init --pod-network-cidr={{ cidr|default('192.168.0.0/16') }} --control-plane-endpoint={{ endpoint }}" # TODO: turn these into variables
           register: init_cmd
-        - debug: msg="{{ initcmd.stdout_lines }}"
         - name: Check initialization status
           fail:
             msg: Non-zero return code for kubeadm init. Cluster initialization failed?
@@ -88,15 +87,15 @@
         - name: Install Calico pod network
           shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
       when:
-        - inventory_hostname in groups['kube_master']|default([])
+        - "'kube_master' in group_names"
         - not apiserver_manifest.stat.exists
     - name: Create join token
       shell: "kubeadm token create --description 'Temporary join token (Ansible)' --ttl 1h --print-join-command"
       register: token_create
-      when: inventory_hostname in groups['kube_master']|default([])
+      when: "'kube_master' in group_names"
     - name: Join cluster
       shell: "{{  token_create.stdout.strip() }}"
-      when: inventory_hostname in groups['kube_worker']|default([])
+      when: "'kube_worker' in group_names"
     - name: Delete join token
       shell: "kubeadm token delete {{ token_create.stdout.strip().split('--token ')[1].split(' ')[0] }}"
-      when: inventory_hostname in groups['kube_master']|default([])
+      when: "'kube_master' in group_names"
