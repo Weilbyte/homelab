@@ -87,15 +87,15 @@
         - name: Install Calico pod network
           shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
       when:
-        - "'kube_master' in group_names"
+        - "'kube_master' in {{ group_names }}"
         - not apiserver_manifest.stat.exists
     - name: Create join token
       shell: "kubeadm token create --description 'Temporary join token (Ansible)' --ttl 1h --print-join-command"
       register: token_create
-      when: "'kube_master' in group_names"
+      when: "'kube_master' in {{ group_names }}"
     - name: Join cluster
       shell: "{{  token_create.stdout.strip() }}"
-      when: "'kube_worker' in group_names"
+      when: "'kube_worker' in {{ group_names }}"
     - name: Delete join token
       shell: "kubeadm token delete {{ token_create.stdout.strip().split('--token ')[1].split(' ')[0] }}"
-      when: "'kube_master' in group_names"
+      when: "'kube_master' in {{ group_names }}"
