@@ -55,7 +55,7 @@
             name: ['kubelet', 'kubeadm', 'kubectl']
             update_cache: true
             state: present # holds automatically
-      when: kubectl_binary.rc == 1
+      when: kubectl_binary.rc == 127
 
 - name: Run Kubernetes cluster commands
   hosts: kube_master:kube_worker
