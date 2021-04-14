@@ -1,0 +1,23 @@
+- name: Install NFS Server
+  hosts: nfs_server
+  pre_tasks:
+    - name: Ensure K8S SSD share directory exists
+      file:
+        path: /srv/nfs/k8s/ssd
+        state: directory
+        recurse: true
+    - name: Ensure K8S HDD share directory exists
+      file:
+        path: /srv/nfs/k8s/hdd
+        state: directory
+        recurse: true
+  roles:
+    - role: geerlingguy.nfs
+      nfs_exports: ['/srv/nfs/k8s/ssd 10.0.20.0/24(rw,sync,no_subtree_check)', '/srv/nfs/k8s/hdd 10.0.20.0/24(rw,sync,no_subtree_check)']
+  
+- name: Install NFS Client
+  hosts: nfs_client
+  tasks:
+    - name: Ensure nfs-common is installed
+      apt:
+        name: nfs-common

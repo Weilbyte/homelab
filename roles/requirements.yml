@@ -7,3 +7,6 @@ roles:
   - name: geerlingguy.containerd
     src: https://github.com/geerlingguy/ansible-role-containerd.git
     version: df9dc4b7c31db1635187eb0e484d56c1fe06fa7b
+  - name: geerlingguy.nfs
+    src: https://github.com/geerlingguy/ansible-role-nfs.git
+    version: 11e9802153ffe19709e1fd3d1e49beb0d641d760 # 2.0.0
