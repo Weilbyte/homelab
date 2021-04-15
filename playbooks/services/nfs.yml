@@ -14,7 +14,7 @@
       loop: "{{ exports }}"
   roles:
     - role: geerlingguy.nfs
-      nfs_exports: exports
+      nfs_exports: "{{ exports }}"
   
 - name: Install NFS Client
   hosts: nfs_client
