@@ -1,19 +1,20 @@
 - name: Install NFS Server
   hosts: nfs_server
   pre_tasks:
-    - name: Ensure K8S SSD share directory exists
+    - name: Verify that mandatory variables are defined
+      assert:
+        that: exports is defined
+        fail_msg: "Required variable exports is missing!"
+        success_msg: "Required variable exports is present"
+    - name: Ensure share directory exists
       file:
-        path: /srv/nfs/k8s/ssd
+        path: "{{ item.split()[0] }}"
         state: directory
         recurse: true
-    - name: Ensure K8S HDD share directory exists
-      file:
-        path: /srv/nfs/k8s/hdd
-        state: directory
-        recurse: true
+      loop: "{{ exports }}"
   roles:
     - role: geerlingguy.nfs
-      nfs_exports: ['/srv/nfs/k8s/ssd 10.0.20.0/24(rw,sync,no_subtree_check)', '/srv/nfs/k8s/hdd 10.0.20.0/24(rw,sync,no_subtree_check)']
+      nfs_exports: exports
   
 - name: Install NFS Client
   hosts: nfs_client
