@@ -73,7 +73,7 @@
     - name: Cluster creation
       block:
         - name: Initialize cluster
-          shell: "kubeadm init --pod-network-cidr={{ cidr|default('192.168.0.0/16') }} --control-plane-endpoint={{ endpoint }}" # TODO: turn these into variables
+          shell: "kubeadm init --pod-network-cidr={{ cidr|default('192.168.0.0/16') }} --control-plane-endpoint={{ endpoint }} --ignore-preflight-errors=Mem" # TODO: turn these into variables
           register: init_cmd
         - name: Check initialization status
           fail:
